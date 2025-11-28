@@ -15,6 +15,12 @@ const { addItemToCart, getCart, checkoutCart } = require("../services/cartServic
  *         required: true
  *         schema:
  *           type: string
+ *       - in: header
+ *         name: X-User-Role
+ *         required: true
+ *         schema:
+ *           type: string
+ *           enum: [admin, user]
  *     requestBody:
  *       required: true
  *       content:
@@ -67,6 +73,12 @@ router.post("/cart/items", (req, res) => {
  *         required: true
  *         schema:
  *           type: string
+ *       - in: header
+ *         name: X-User-Role
+ *         required: true
+ *         schema:
+ *           type: string
+ *           enum: [admin, user]
  *     responses:
  *       200:
  *         description: Returns current cart contents
@@ -87,6 +99,14 @@ router.get("/cart", (req, res) => {
  *       - in: header
  *         name: X-User-Id
  *         required: true
+ *         schema:
+ *           type: string
+ *       - in: header
+ *         name: X-User-Role
+ *         required: true
+ *         schema:
+ *           type: string
+ *           enum: [admin, user]
  *     requestBody:
  *       content:
  *         application/json:

@@ -12,7 +12,7 @@ const stats = {
 };
 
 // Every Nth order is eligible for code generation
-const NTH_ORDER_FOR_DISCOUNT = 3;
+const NTH_ORDER_FOR_DISCOUNT = 3 // for now i have hardcode this but we can make it dynamic and store in the env ;
 
 function getOrCreateCart(userId) {
   let cart = carts.get(userId);

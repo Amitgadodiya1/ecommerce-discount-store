@@ -1,33 +1,27 @@
 const express = require("express");
 const cors = require("cors");
-const swaggerDocs = require("./config/swagger");
 
 const cartRoutes = require("./routes/cartRoutes");
 const adminRoutes = require("./routes/adminRoutes");
+const { adminAccess, userAccess, authMiddleware } = require("./middleware/auth");
+
+const swaggerUi = require("swagger-ui-express");
+const YAML = require("yamljs");
+const swaggerDocument = YAML.load("./config/swagger.yaml");
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-// 👉 Register Swagger BEFORE auth middleware
-swaggerDocs(app);
+// Public Swagger documentation (no authentication)
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-// auth middleware (after swagger)
-app.use((req, res, next) => {
-  if (req.path.startsWith("/docs")) {
-    return next(); // bypass for swagger docs
-  }
+// Global Authentication middleware for real API endpoints
+app.use(authMiddleware);
 
-  const userId = req.headers["x-user-id"];
-  if (!userId) {
-    return res.status(400).json({ error: "Missing X-User-Id header" });
-  }
-  req.userId = userId;
-  next();
-});
-
-app.use("/api", cartRoutes);
-app.use("/api/admin", adminRoutes);
+// Protected API routes
+app.use("/api", userAccess, cartRoutes);
+app.use("/api/admin", adminAccess, adminRoutes);
 
 app.listen(3000, () => console.log("Server running on port 3000"));

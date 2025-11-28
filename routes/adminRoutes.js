@@ -26,6 +26,12 @@ const {
  *         required: true
  *         schema:
  *           type: string
+ *       - in: header
+ *         name: X-User-Role
+ *         required: true
+ *         schema:
+ *           type: string
+ *           enum: [admin, user]
  *     responses:
  *       200:
  *         description: Discount code generated
@@ -58,6 +64,12 @@ router.post("/discounts/generate", (req, res) => {
  *         required: true
  *         schema:
  *           type: string
+ *       - in: header
+ *         name: X-User-Role
+ *         required: true
+ *         schema:
+ *           type: string
+ *           enum: [admin, user]
  *     responses:
  *       200:
  *         description: Returns analytics including total sales and discount usage
