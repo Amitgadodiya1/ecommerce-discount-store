@@ -1,0 +1,82 @@
+openapi: 3.0.0
+info:
+  title: Ecommerce Discount Store API
+  version: 1.0.0
+  description: API documentation for Cart, Checkout, Discount Generation and Admin stats
+
+servers:
+  - url: http://localhost:3000
+
+components:
+  securitySchemes:
+    UserHeader:
+      type: apiKey
+      in: header
+      name: X-User-Id
+
+security:
+  - UserHeader: []
+
+paths:
+  /api/cart/items:
+    post:
+      summary: Add item to cart
+      tags: [Cart]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                productId:
+                  type: string
+                name:
+                  type: string
+                price:
+                  type: number
+                quantity:
+                  type: number
+      responses:
+        200:
+          description: Item added to cart
+
+  /api/cart:
+    get:
+      summary: Get user cart items
+      tags: [Cart]
+      responses:
+        200:
+          description: Cart Details
+
+  /api/checkout:
+    post:
+      summary: Checkout and apply discount if valid
+      tags: [Cart]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                discountCode:
+                  type: string
+      responses:
+        200:
+          description: Order placed
+
+  /api/admin/discounts/generate:
+    post:
+      summary: Generate discount code if eligible
+      tags: [Admin]
+      responses:
+        200:
+          description: Discount code generated
+
+  /api/admin/stats:
+    get:
+      summary: Get total statistics
+      tags: [Admin]
+      responses:
+        200:
+          description: Stats response

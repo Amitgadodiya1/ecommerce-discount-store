@@ -8,7 +8,10 @@ function generateCode() {
 function canGenerateDiscountCode() {
   const nextOrderNumber = stats.totalOrdersPlaced + 1;
   const isNth = nextOrderNumber % NTH_ORDER_FOR_DISCOUNT === 0;
-  const hasActive = stats.discountCodes.some(dc => !dc.used);
+
+  // Only consider active non-expired coupons
+  const hasActive = stats.discountCodes.some(dc => !dc.used && !dc.expired);
+
   return isNth && !hasActive;
 }
 
@@ -17,13 +20,22 @@ function createDiscountCode() {
     throw new Error("Not eligible to generate discount code");
   }
 
+  // Expire any previous unused active coupons
+  stats.discountCodes.forEach(dc => {
+    if (!dc.used && !dc.expired) {
+      dc.expired = true;
+    }
+  });
+
   const code = {
     code: generateCode(),
-    used: false
+    used: false,
+    expired: false
   };
 
   stats.discountCodes.push(code);
-  logger.info("Generated discount code", code.code, {
+
+  logger.info("Generated new discount code", code.code, {
     nextOrderNumber: stats.totalOrdersPlaced + 1
   });
 
@@ -31,12 +43,13 @@ function createDiscountCode() {
 }
 
 function findActiveDiscountCode(code) {
-  return stats.discountCodes.find(dc => dc.code === code && !dc.used);
+  return stats.discountCodes.find(dc => dc.code === code && !dc.used && !dc.expired);
 }
 
 function markDiscountUsed(codeObj, order) {
   codeObj.used = true;
   codeObj.orderId = order.id;
+
   logger.info("Discount code used", codeObj.code, {
     orderId: order.id,
     userId: order.userId,
